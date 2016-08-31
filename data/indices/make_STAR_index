@@ -1,0 +1,2 @@
+mkdir STAR_index_100
+STAR --runMode genomeGenerate --runThreadN 4 --genomeDir ./STAR_index_100 --genomeFastaFiles ../anno/genome.fa --sjdbGTFfile ../anno/transcripts.gtf --sjdbOverhang 100

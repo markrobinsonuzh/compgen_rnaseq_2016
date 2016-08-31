@@ -1,0 +1,1 @@
+salmon index -i salmon_index -t ../anno/transcripts.fa
