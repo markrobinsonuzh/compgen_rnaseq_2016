@@ -1,0 +1,74 @@
+
+# Preprocessing
+
+To get the salmon "expected counts", run the `run_salmon` script and spot check that the results 
+
+# Load some libraries
+
+```r
+library(edgeR)
+library(tximport)
+```
+
+# Start from a table of metadata
+
+Read in the table of metadata and check that the files needed exist.
+
+```r
+md <- read.table("metadata.tsv", header=TRUE, stringsAsFactors=FALSE)
+stopifnot(file.exists(md$salmonfile))
+stopifnot(file.exists(md$bamfile))
+```
+
+# Use tximport to read in the 
+
+```r
+txi <- tximport(md$salmonfile, type = "salmon", txOut=TRUE)
+```
+
+
+# Now, a standard edgeR pipeline (other options exist)
+
+```r
+cts <- txi$counts
+normMat <- txi$length
+normMat <- normMat/exp(rowMeans(log(normMat)))
+o <- log(calcNormFactors(cts/normMat)) + log(colSums(cts/normMat))
+
+d <- DGEList(cts)
+d$offset <- t(t(log(normMat)) + o)
+
+mm <- model.matrix(~group,data=df)
+
+
+# diagnostic 1
+plotMDS(d)
+
+# filter lowly expressed transcripts
+k <- rowSums(cpm(d)>1) >= 3
+d <- d[k,]
+
+d <- estimateGLMCommonDisp(d, mm)
+d <- estimateGLMTrendedDisp(d, mm)
+d <- estimateGLMTagwiseDisp(d, mm)
+
+# diagnostic 2
+plotBCV(d)
+
+cps <- cpm(d)
+d$genes <- data.frame(transcript_id=rownames(d), round(cps,1))
+
+f <- glmFit(d, mm)
+lrt <- glmLRT(f, coef=2)
+
+# diagnostic 3
+hist(lrt$table$PValue, 50)
+
+
+options(width=160)
+topTags(lrt)
+
+# diagnostic 4
+barplot( cps["ENST00000361886",] )
+
+
