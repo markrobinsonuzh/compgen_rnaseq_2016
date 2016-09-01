@@ -23,7 +23,8 @@ stopifnot(file.exists(md$bamfile))
 # Use *tximport* to read in the quantifications
 
 ```r
-txi <- tximport(md$salmonfile, type = "salmon", txOut=TRUE)
+txi <- tximport(structure(md$salmonfile, names = md$whatever), 
+                type = “salmon”, txOut = TRUE)
 ```
 
 
@@ -39,8 +40,9 @@ o <- log(calcNormFactors(cts/normMat)) + log(colSums(cts/normMat))
 
 d <- DGEList(cts)
 d$offset <- t(t(log(normMat)) + o)
+d <- calcNormFactors(d)
 
-mm <- model.matrix(~group,data=df)
+mm <- model.matrix(~group,data=md)
 ```
 
 
