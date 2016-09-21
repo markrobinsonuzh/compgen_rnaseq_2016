@@ -1,0 +1,6 @@
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleA1_STAR_s.bam sampleA1.counts
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleA2_STAR_s.bam sampleA2.counts
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleA3_STAR_s.bam sampleA3.counts
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleB1_STAR_s.bam sampleB1.counts
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleB2_STAR_s.bam sampleB2.counts
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_count.py -p yes -s no -f bam -r pos ../anno/transcripts.gff ../BAM/sampleB3_STAR_s.bam sampleB3.counts

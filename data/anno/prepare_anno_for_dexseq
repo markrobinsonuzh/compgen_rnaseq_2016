@@ -1,0 +1,1 @@
+python /Users/mark/Library/R/3.3/library/DEXSeq/python_scripts/dexseq_prepare_annotation.py -r no transcripts.gtf transcripts.gff
