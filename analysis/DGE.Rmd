@@ -5,13 +5,14 @@ output: html_document
 
 # Preprocessing
 
-To get the salmon "expected counts", run the `run_salmon` script and spot check that the results 
+To get the salmon "expected counts", run the `run_salmon` script and spot check the results 
 
 # Load some libraries
 
 ```{r load_libraries}
 library(edgeR)
 library(tximport)
+library(rtracklayer)
 ```
 
 # Start from a table of metadata
@@ -29,9 +30,12 @@ md
 
 # Use *tximport* to read in the quantifications
 
-```{r call_tximport}
+```{r get_anno_call_tximport}
+anno <- import("../data/anno/transcripts.gtf.gz")
+txgene <- unique(mcols(anno)[,c("transcript_id","gene_id")])
+
 txi <- tximport(structure(md$salmonfile, names = md$sample), 
-                type = "salmon")
+                type = "salmon", tx2gene=txgene)
 ```
 
 
@@ -91,7 +95,7 @@ This is a little book-keeping, so that the output table has the transcript ident
 
 ```{r bookkeeping}
 cps <- cpm(d)
-d$genes <- data.frame(transcript_id=rownames(d), 
+d$genes <- data.frame(gene_id=rownames(d), 
                       round(cps,1))
 ```
 

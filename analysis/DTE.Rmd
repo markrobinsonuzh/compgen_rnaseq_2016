@@ -1,11 +1,15 @@
+---
+title: "Salmon-tximport-edgeR DTE analysis"
+output: html_document
+---
 
 # Preprocessing
 
-To get the salmon "expected counts", run the `run_salmon` script and spot check that the results 
+To get the salmon "expected counts", run the `run_salmon` script and spot check the results 
 
 # Load some libraries
 
-```r
+```{r load_libraries}
 library(edgeR)
 library(tximport)
 ```
@@ -14,17 +18,20 @@ library(tximport)
 
 Read in the table of metadata and check that the files needed exist.
 
-```r
-md <- read.table("metadata.tsv", header=TRUE, stringsAsFactors=FALSE)
+```{r read_metadata}
+md <- read.table("metadata.csv", sep=";", 
+                 header=TRUE, stringsAsFactors=FALSE)
 stopifnot(file.exists(md$salmonfile))
-stopifnot(file.exists(md$bamfile))
+#stopifnot(file.exists(md$bamfile))
+md$col <- as.numeric(as.factor(md$group))
+md
 ```
 
 # Use *tximport* to read in the quantifications
 
-```r
-txi <- tximport(structure(md$salmonfile, names = md$whatever), 
-                type = “salmon”, txOut = TRUE)
+```{r call_tximport}
+txi <- tximport(structure(md$salmonfile, names = md$sample), 
+                type = "salmon", txOut = TRUE)
 ```
 
 
@@ -32,7 +39,7 @@ txi <- tximport(structure(md$salmonfile, names = md$whatever),
 
 We recognize, of course, that other reasonable options, such as sleuth/DESeq2/etc, exist.
 
-```r
+```{r make_DGEList}
 cts <- txi$counts
 normMat <- txi$length
 normMat <- normMat/exp(rowMeans(log(normMat)))
@@ -41,22 +48,20 @@ o <- log(calcNormFactors(cts/normMat)) + log(colSums(cts/normMat))
 d <- DGEList(cts)
 d$offset <- t(t(log(normMat)) + o)
 d <- calcNormFactors(d)
-
-mm <- model.matrix(~group,data=md)
 ```
 
 
 # Always look at (multiple) diagnostics:  #1 multi-dimensional scaling plot
 
-```r
-plotMDS(d)
+```{r diag_mds}
+plotMDS(d, col=md$col)
 ```
 
 # Filter
 
 We usually apply a filter to remove lowly expressed transcripts/genes.
 
-```r
+```{r filter}
 k <- rowSums(cpm(d)>1) >= 3
 dim(d)
 d <- d[k,]
@@ -65,8 +70,10 @@ dim(d)
 
 # Dispersion estimation
 
+Define the design matrix (in this case, quite straightforward) and then estimate dispersions.
 
-```r
+```{r design_dispersion}
+mm <- model.matrix(~group,data=md)
 d <- estimateDisp(d,mm)
 ```
 
@@ -74,7 +81,7 @@ d <- estimateDisp(d,mm)
 
 We generally observe a decreasing trend here.
 
-```r
+```{r diag_bcv}
 plotBCV(d)
 ```
 
@@ -82,7 +89,7 @@ plotBCV(d)
 
 This is a little book-keeping, so that the output table has the transcript identifiers and the full table of counts-per-million.  Here is the place to add other useful stuff, such as gene symbols, chromosome locations, etc.
 
-```r
+```{r bookkeeping}
 cps <- cpm(d)
 d$genes <- data.frame(transcript_id=rownames(d), 
                       round(cps,1))
@@ -93,7 +100,7 @@ d$genes <- data.frame(transcript_id=rownames(d),
 
 Here, it is a simple two-group comparison, but more detailed comparisons can be easily made, using an appropriate combination of design matrix and contrasts/coefficients.
 
-```r
+```{r fit_test}
 f <- glmFit(d, mm)
 lrt <- glmLRT(f, coef=2)
 topTags(lrt)
@@ -101,14 +108,14 @@ topTags(lrt)
 
 # Diagnostic: Histogram of P-values
 
-```r
+```{r pval_hist}
 hist(lrt$table$PValue, 50)
 ```
 
 
 # Diagnostic: Spot check of some DE transcripts
-```r
-barplot( cps["ENST00000361886",] )
+```{r known_diffT}
+barplot( cps["ENST00000367770",], col=md$col )
 ```
 
 
@@ -116,6 +123,6 @@ barplot( cps["ENST00000361886",] )
 
 When you do these analyses, it is always a good idea to keep a record of the versions used
 
-```r
+```{r sessioninfo}
 sessionInfo()
 ```

@@ -1,0 +1,68 @@
+---
+title: "DEXSEQ DTU analysis"
+output: html_document
+---
+
+# Preprocessing
+
+To get the dexseq exon bin-level counts, run the `run_dexseq_counting` script and spot check that the results 
+
+# Load some libraries
+
+```{r load_libraries}
+library(edgeR)
+library(tximport)
+```
+
+# Start from a table of metadata
+
+Read in the table of metadata and check that the files needed exist.
+
+```{r read_metadata}
+md <- read.table("metadata.csv", sep=";", 
+                 header=TRUE, stringsAsFactors=FALSE)
+stopifnot(file.exists(md$dexseqfile))
+md$col <- as.numeric(as.factor(md$group))
+md
+```
+
+# Create object with counts
+
+Read in the dataset to a `DEXSeqDataSet` object, a container for the analysis.
+
+```{r create_DEXSeqDataSet}
+ff <- "../data/anno/transcripts.gff"
+
+dxd <- DEXSeqDataSetFromHTSeq(countfiles=md$dexseqfile, sampleData=md, 
+                              design=~ sample + exon + group:exon, flattenedfile=ff)
+
+```
+
+
+# Standard estimation pipeline
+
+Here are the standard steps to make dispersion estimates within the NB model and then formally test for DEU.
+
+```{r estimation}
+dxd <- estimateSizeFactors(dxd)
+dxd <- estimateDispersions(dxd, BPPARAM=MulticoreParam(workers=4))
+dxd <- testForDEU(dxd, BPPARAM=MulticoreParam(workers=4))
+res <- DEXSeqResults(dxd)
+```
+
+
+# Look at some top hits
+
+```{r plotdexseq}
+plotDEXSeq(res, "ENSG00000016490", fitExpToVar="group", 
+           displayTranscripts=TRUE); 
+```
+
+
+# Reproducibility
+
+When you do these analyses, it is always a good idea to keep a record of the versions used
+
+```{r sessioninfo}
+sessionInfo()
+```
