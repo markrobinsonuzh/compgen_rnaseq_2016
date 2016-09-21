@@ -1,2 +1,6 @@
 mkdir STAR_index_100
+gunzip ../anno/genome.fa.gz
+gunzip ../anno/transcripts.gtf.gz
 STAR --runMode genomeGenerate --runThreadN 4 --genomeDir ./STAR_index_100 --genomeFastaFiles ../anno/genome.fa --sjdbGTFfile ../anno/transcripts.gtf --sjdbOverhang 100
+#gzip ../anno/genome.fa
+gzip ../anno/transcripts.gtf

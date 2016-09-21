@@ -1,1 +1,3 @@
+gunzip ../anno/transcripts.fa.gz
 salmon index -i salmon_index -t ../anno/transcripts.fa
+gzip ../anno/transcripts.fa

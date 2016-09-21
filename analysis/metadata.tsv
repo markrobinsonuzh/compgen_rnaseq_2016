@@ -1,7 +1,0 @@
-sample	group	salmonfile	bamfile
-N1	normal	../data/salmon/N1/quant.sf	../data/BAM/N1_STAR_s.bam
-N2	normal	../data/salmon/N2/quant.sf	../data/BAM/N2_STAR_s.bam
-N3	normal	../data/salmon/N3/quant.sf	../data/BAM/N3_STAR_s.bam
-T1	treatment	../data/salmon/T1/quant.sf	../data/BAM/T1_STAR_s.bam
-T2	treatment	../data/salmon/T2/quant.sf	../data/BAM/T2_STAR_s.bam
-T3	treatment	../data/salmon/T3/quant.sf	../data/BAM/T3_STAR_s.bam
