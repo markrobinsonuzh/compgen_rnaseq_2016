@@ -31,7 +31,7 @@ md
 # Use *tximport* to read in the quantifications
 
 ```{r get_anno_call_tximport}
-anno <- import("../data/anno/transcripts.gtf.gz")
+anno <- import("../data/anno/transcripts.gtf")
 txgene <- unique(mcols(anno)[,c("transcript_id","gene_id")])
 
 txi <- tximport(structure(md$salmonfile, names = md$sample), 
@@ -119,7 +119,7 @@ hist(lrt$table$PValue, 50)
 
 # Diagnostic: Spot check of some DE transcripts
 ```{r known_diffT}
-barplot( cps["ENSG00000009790",], col=md$col )
+barplot( cps["ENSG00000117472",], col=md$col )
 ```
 
 

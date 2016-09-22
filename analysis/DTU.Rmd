@@ -10,8 +10,7 @@ To get the dexseq exon bin-level counts, run the `run_dexseq_counting` script an
 # Load some libraries
 
 ```{r load_libraries}
-library(edgeR)
-library(tximport)
+library(DEXSeq)
 ```
 
 # Start from a table of metadata
